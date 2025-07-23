@@ -117,7 +117,7 @@ public class Delivery {
     this.calculateTotalItems();
   }
 
-  public void editPreparationDetail(PreparationDetails details) {
+  public void editPreparationDetails(PreparationDetails details) {
     this.verifyIfCanBeEdited();
 
     this.setSender(details.getSender());

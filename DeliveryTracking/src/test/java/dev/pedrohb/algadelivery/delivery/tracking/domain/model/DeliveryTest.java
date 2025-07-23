@@ -18,7 +18,7 @@ public class DeliveryTest {
   public void shouldChangeToPlaced() {
     Delivery delivery = Delivery.draft();
 
-    delivery.editPreparationDetail(createdValidPreparationDetails());
+    delivery.editPreparationDetails(createdValidPreparationDetails());
 
     delivery.place();
 

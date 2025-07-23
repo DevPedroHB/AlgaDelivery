@@ -25,7 +25,7 @@ public class DeliveryRepositoryTest {
   public void shouldPersist() {
     Delivery delivery = Delivery.draft();
 
-    delivery.editPreparationDetail(createdValidPreparationDetails());
+    delivery.editPreparationDetails(createdValidPreparationDetails());
 
     delivery.addItem("An example product 01", 2);
     delivery.addItem("An example product 02", 3);
