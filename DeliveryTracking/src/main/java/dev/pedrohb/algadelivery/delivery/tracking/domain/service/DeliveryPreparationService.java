@@ -1,7 +1,7 @@
 package dev.pedrohb.algadelivery.delivery.tracking.domain.service;
 
 import java.math.BigDecimal;
-import java.time.Duration;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 public class DeliveryPreparationService {
 
   private final DeliveryRepository deliveryRepository;
+  private final DeliveryTimeEstimationService deliveryTimeEstimationService;
+  private final CourierPayoutCalculationService courierPayoutCalculationService;
 
   @Transactional
   public Delivery draft(DeliveryInput input) {
@@ -64,16 +66,16 @@ public class DeliveryPreparationService {
         .street(recipientInput.getStreet())
         .build();
 
-    Duration expectedDeliveryTime = Duration.ofHours(3);
-    BigDecimal payout = new BigDecimal("10");
+    DeliveryEstimate estimate = this.deliveryTimeEstimationService.estimate(sender, recipient);
+    BigDecimal calculatedPayout = this.courierPayoutCalculationService.calculatePayout(estimate.getDistanceInKm());
 
-    BigDecimal distanceFee = new BigDecimal("10");
+    BigDecimal distanceFee = this.calculateFee(estimate.getDistanceInKm());
 
     Delivery.PreparationDetails preparationDetails = Delivery.PreparationDetails.builder()
         .recipient(recipient)
         .sender(sender)
-        .expectedDeliveryTime(expectedDeliveryTime)
-        .courierPayout(payout)
+        .expectedDeliveryTime(estimate.getEstimatedTime())
+        .courierPayout(calculatedPayout)
         .distanceFee(distanceFee)
         .build();
 
@@ -82,5 +84,11 @@ public class DeliveryPreparationService {
     for (ItemInput itemInput : input.getItems()) {
       delivery.addItem(itemInput.getName(), itemInput.getQuantity());
     }
+  }
+
+  private BigDecimal calculateFee(Double distanceInKm) {
+    return new BigDecimal("3")
+        .multiply(new BigDecimal(distanceInKm))
+        .setScale(2, RoundingMode.HALF_EVEN);
   }
 }
