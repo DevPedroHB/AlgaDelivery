@@ -6,6 +6,6 @@ spring:
       ddl-auto: create-drop
     show-sql: true
   datasource:
-    url: ${DATASOURCE_URL_TEST}
+    url: ${DATASOURCE_URL_DELIVERY_TEST}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}

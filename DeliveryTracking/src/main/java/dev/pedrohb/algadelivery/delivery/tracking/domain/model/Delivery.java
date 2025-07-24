@@ -8,6 +8,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.AbstractAggregateRoot;
+
+import dev.pedrohb.algadelivery.delivery.tracking.domain.event.DeliveryFulfilledEvent;
+import dev.pedrohb.algadelivery.delivery.tracking.domain.event.DeliveryPickUpEvent;
+import dev.pedrohb.algadelivery.delivery.tracking.domain.event.DeliveryPlacedEvent;
 import dev.pedrohb.algadelivery.delivery.tracking.domain.exception.DomainException;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -28,9 +33,9 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter(AccessLevel.PRIVATE)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class Delivery {
+public class Delivery extends AbstractAggregateRoot<Delivery> {
   @Id
   @EqualsAndHashCode.Include
   private UUID id;
@@ -133,17 +138,23 @@ public class Delivery {
 
     this.changeStatusTo(DeliveryStatus.WAITING_FOR_COURIER);
     this.setPlacedAt(OffsetDateTime.now());
+
+    super.registerEvent(new DeliveryPlacedEvent(this.getPlacedAt(), this.getId()));
   }
 
   public void pickUp(UUID courierId) {
     this.setCourierId(courierId);
     this.changeStatusTo(DeliveryStatus.IN_TRANSIT);
     this.setAssignedAt(OffsetDateTime.now());
+
+    super.registerEvent(new DeliveryPickUpEvent(this.getAssignedAt(), this.getId()));
   }
 
   public void markAsDelivered() {
     this.changeStatusTo(DeliveryStatus.DELIVERED);
     this.setFulfilledAt(OffsetDateTime.now());
+
+    super.registerEvent(new DeliveryFulfilledEvent(this.getFulfilledAt(), this.getId()));
   }
 
   private void calculateTotalItems() {
