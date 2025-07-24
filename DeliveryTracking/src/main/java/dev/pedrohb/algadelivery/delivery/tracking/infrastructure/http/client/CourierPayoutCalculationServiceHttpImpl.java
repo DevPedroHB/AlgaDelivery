@@ -3,8 +3,11 @@ package dev.pedrohb.algadelivery.delivery.tracking.infrastructure.http.client;
 import java.math.BigDecimal;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import dev.pedrohb.algadelivery.delivery.tracking.domain.service.CourierPayoutCalculationService;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -14,9 +17,15 @@ public class CourierPayoutCalculationServiceHttpImpl implements CourierPayoutCal
 
   @Override
   public BigDecimal calculatePayout(Double distanceInKm) {
-    var courierPayoutResultModel = this.courierAPIClient
-        .payoutCalculation(new CourierPayoutCalculationInput(distanceInKm));
+    try {
+      var courierPayoutResultModel = this.courierAPIClient
+          .payoutCalculation(new CourierPayoutCalculationInput(distanceInKm));
 
-    return courierPayoutResultModel.getPayoutFee();
+      return courierPayoutResultModel.getPayoutFee();
+    } catch (ResourceAccessException e) {
+      throw new GatewayTimeoutException(e);
+    } catch (HttpServerErrorException | CallNotPermittedException | IllegalArgumentException e) {
+      throw new BadGatewayException(e);
+    }
   }
 }

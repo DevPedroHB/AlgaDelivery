@@ -1,6 +1,7 @@
 package dev.pedrohb.algadelivery.courier.management.api.controller;
 
 import java.math.BigDecimal;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import dev.pedrohb.algadelivery.courier.management.domain.service.CourierPayoutS
 import dev.pedrohb.algadelivery.courier.management.domain.service.CourierRegistrationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -61,8 +63,19 @@ public class CourierController {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
 
+  @SneakyThrows
   @PostMapping("/payout-calculation")
   public CourierPayoutResultModel calculate(@RequestBody CourierPayoutCalculationInput input) {
+    log.info("Calculating");
+
+    if (Math.random() < 0.5) {
+      throw new RuntimeException();
+    }
+
+    int millis = new Random().nextInt(400);
+
+    Thread.sleep(millis);
+
     BigDecimal payoutFee = this.courierPayoutService.calculate(input.getDistanceInKm());
 
     return new CourierPayoutResultModel(payoutFee);

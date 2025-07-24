@@ -1,5 +1,6 @@
 package dev.pedrohb.algadelivery.delivery.tracking.api.controller;
 
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import dev.pedrohb.algadelivery.delivery.tracking.domain.service.DeliveryCheckpo
 import dev.pedrohb.algadelivery.delivery.tracking.domain.service.DeliveryPreparationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 @RestController
 @RequestMapping("/api/v1/deliveries")
@@ -44,8 +46,17 @@ public class DeliveryController {
     return this.deliveryPreparationService.edit(deliveryId, input);
   }
 
+  @SneakyThrows
   @GetMapping
   public PagedModel<Delivery> findAll(@PageableDefault Pageable pageable) {
+    if (Math.random() < 0.7) {
+      throw new RuntimeException();
+    }
+
+    int millis = new Random().nextInt(400);
+
+    Thread.sleep(millis);
+
     return new PagedModel<>(this.deliveryRepository.findAll(pageable));
   }
 
