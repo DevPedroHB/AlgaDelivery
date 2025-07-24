@@ -1,4 +1,5 @@
-server.port: 8081
+server:
+  port: 8081
 spring:
   config:
     import:
@@ -26,3 +27,10 @@ spring:
           delivery-placed-event:dev.pedrohb.algadelivery.courier.management.infrastructure.event.DeliveryPlacedIntegrationEvent,
           delivery-picked-up-event:com.fasterxml.jackson.databind.JsonNode,
           delivery-fulfilled-event:dev.pedrohb.algadelivery.courier.management.infrastructure.event.DeliveryFulfilledIntegrationEvent
+eureka:
+  client:
+    server-url:
+      default-zone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${random.value}
+    prefer-ip-address: true
