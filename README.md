@@ -45,7 +45,7 @@ O projeto foi desenvolvido utilizando uma arquitetura de microsserviços, onde c
 
 Para executar o projeto, é necessário ter o Docker e o Docker Compose instalados.
 
-1. Clone o repositório: `git clone https://github.com/seu-usuario/algadelivery.git`
+1. Clone o repositório: `git clone https://github.com/DevPedroHB/algadelivery.git`
 2. Navegue até a pasta do projeto: `cd algadelivery`
 3. Execute o comando: `docker-compose up -d`
 
